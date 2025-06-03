@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  title: Construction Project API
+  version: 1.0.0
+  description: API для управління клієнтами, замовленнями та фотографіями.
+
+servers:
+  - url: https://api.yourdomain.com/v1
+
+paths:
+  /clients:
+    get:
+      summary: Отримати список клієнтів
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Створити нового клієнта
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '201':
+          description: Created
+
+  /clients/{id}:
+    get:
+      summary: Отримати клієнта за ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Видалити клієнта
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: No Content
+
+  /orders:
+    get:
+      summary: Отримати список замовлень
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Створити нове замовлення
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Created
+
+  /orders/{id}:
+    get:
+      summary: Отримати замовлення за ID
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+
+  /photos:
+    get:
+      summary: Отримати список фото
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Додати фото до замовлення
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhotoInput'
+      responses:
+        '201':
+          description: Created
+
+components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    ClientInput:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+
+    OrderInput:
+      type: object
+      required:
+        - client_id
+        - description
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        status:
+          type: string
+          default: "new"
+
+    PhotoInput:
+      type: object
+      required:
+        - title
+        - url
+        - order_id
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+          format: uri
+        order_id:
+          type: string
+          format: uuid
