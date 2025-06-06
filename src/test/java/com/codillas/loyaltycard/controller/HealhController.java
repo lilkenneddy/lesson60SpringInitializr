@@ -1,0 +1,15 @@
+package com.codillas.loyaltycard.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HealhController {
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        String message = "String is uop and runnung";
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+}

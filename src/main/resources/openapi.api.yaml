@@ -1,0 +1,232 @@
+openapi: 3.0.3
+info:
+  title: Construction Project API
+  version: 1.0.0
+  description: API для управління клієнтами, замовленнями та фотографіями.
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: clients
+    description: Операції з клієнтами
+  - name: orders
+    description: Операції з замовленнями
+  - name: photos
+    description: Операції з фотографіями
+
+paths:
+  /clients:
+    get:
+      summary: Отримати список клієнтів
+      tags: [clients]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientInput'
+    post:
+      summary: Створити нового клієнта
+      tags: [clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInput'
+      responses:
+        '201':
+          description: Created
+
+  /clients/{id}:
+    get:
+      summary: Отримати клієнта за ID
+      tags: [clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientInput'
+    delete:
+      summary: Видалити клієнта
+      tags: [clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+
+  /orders:
+    get:
+      summary: Отримати список замовлень
+      tags: [orders]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderInput'
+    post:
+      summary: Створити нове замовлення
+      tags: [orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Created
+
+  /orders/{id}:
+    get:
+      summary: Отримати замовлення за ID
+      tags: [orders]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInput'
+
+  /photos:
+    get:
+      summary: Отримати список фото
+      tags: [photos]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhotoOutput'
+    post:
+      summary: Додати фото до замовлення
+      tags: [photos]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - title
+                - order_id
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Фотофайл (jpeg/png) з галереї або диска
+                title:
+                  type: string
+                type:
+                  type: string
+                order_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Фото успішно додано
+
+  /photos/{id}:
+    get:
+      summary: Отримати фото за ID
+      tags: [photos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhotoOutput'
+
+components:
+  schemas:
+    ClientInput:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+      properties:
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+
+    OrderInput:
+      type: object
+      required:
+        - client_id
+        - description
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        status:
+          type: string
+          default: "new"
+
+    PhotoOutput:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+          format: uri
+        order_id:
+          type: string
+          format: uuid
